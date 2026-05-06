@@ -113,7 +113,7 @@ export function App({ theme, onToggleTheme }) {
     const templateFileName = templateFile ? `${templateFile.name} (${fileSize(templateFile.size)})` : 'No file selected';
 
     return (
-        <div className="container">
+        <div className={`container ${step === 1 ? 'home-static' : ''}`}>
             <div className="header">
                 <div className="header-top">
                     <span className="header-badge">Data workflow</span>
@@ -130,28 +130,34 @@ export function App({ theme, onToggleTheme }) {
                 {loadingText ? <div className="processing-status">{loadingText}</div> : null}
 
                 {step === 1 ? (
-                    <div className="step active">
+                    <div className="step active upload-step">
                         <div className="step-header"><div className="step-number">1</div><div className="step-title">Upload workbooks</div></div>
                         <p className="step-subtitle">Select source and template files to begin mapping.</p>
-                        <div className="file-upload-area">
-                            <h3>Source file</h3>
-                            <p>.xlsx / .xls / .csv</p>
+                        <div className={`file-upload-area ${sourceFile ? 'has-file' : ''}`}>
+                            <div className="file-upload-head">
+                                <h3>Source file</h3>
+                                <span className="file-type-chip">.xlsx / .xls / .csv</span>
+                            </div>
+                            <p className="file-upload-note">Upload the sheet that contains your original records.</p>
                             <label className="file-picker">
-                                <span className="file-picker-btn">Choose Source File</span>
+                                <span className="file-picker-btn">{sourceFile ? 'Change Source File' : 'Choose Source File'}</span>
                                 <input type="file" accept=".xlsx,.xls,.csv,text/csv" onChange={(e) => onSelectFile(e, true)} />
                             </label>
                             <div className="file-name">{sourceFileName}</div>
-                            {sourceFile ? <div className="file-info">{sourceFile.name} ({fileSize(sourceFile.size)})</div> : null}
+                            {sourceFile ? <div className="file-info">Ready: {sourceFile.name} ({fileSize(sourceFile.size)})</div> : null}
                         </div>
-                        <div className="file-upload-area">
-                            <h3>Template file</h3>
-                            <p>.xlsx / .xls</p>
+                        <div className={`file-upload-area ${templateFile ? 'has-file' : ''}`}>
+                            <div className="file-upload-head">
+                                <h3>Template file</h3>
+                                <span className="file-type-chip">.xlsx / .xls</span>
+                            </div>
+                            <p className="file-upload-note">Upload the sheet that will be updated with mapped values.</p>
                             <label className="file-picker">
-                                <span className="file-picker-btn">Choose Template File</span>
+                                <span className="file-picker-btn">{templateFile ? 'Change Template File' : 'Choose Template File'}</span>
                                 <input type="file" accept=".xlsx,.xls" onChange={(e) => onSelectFile(e, false)} />
                             </label>
                             <div className="file-name">{templateFileName}</div>
-                            {templateFile ? <div className="file-info">{templateFile.name} ({fileSize(templateFile.size)})</div> : null}
+                            {templateFile ? <div className="file-info">Ready: {templateFile.name} ({fileSize(templateFile.size)})</div> : null}
                         </div>
                         <div className="actions-row">
                             <button className="btn btn-primary" disabled={!filesReady || processing} onClick={analyzeFiles}>Analyze and continue</button>
@@ -164,28 +170,40 @@ export function App({ theme, onToggleTheme }) {
                         <div className="step-header"><div className="step-number">2</div><div className="step-title">Map fields</div></div>
                         <p className="step-subtitle">Pick key columns, then map source fields to template fields.</p>
                         <div className="mapping-panel">
-                            <label>Source key column</label>
-                            <select className="column-select" value={sourceKeyField} onChange={(e) => setSourceKeyField(e.target.value)}>
-                                {sourceColumns.map((col) => <option key={col} value={col}>{col}</option>)}
-                            </select>
-                            <label>Template key column</label>
-                            <select className="column-select" value={templateKeyField} onChange={(e) => setTemplateKeyField(e.target.value)}>
-                                {templateColumns.map((col) => <option key={col} value={col}>{col}</option>)}
-                            </select>
+                            <div className="mapping-panel-grid">
+                                <div className="mapping-control">
+                                    <label htmlFor="source-key-column">Source key column</label>
+                                    <select id="source-key-column" className="column-select" value={sourceKeyField} onChange={(e) => setSourceKeyField(e.target.value)}>
+                                        {sourceColumns.map((col) => <option key={col} value={col}>{col}</option>)}
+                                    </select>
+                                </div>
+                                <div className="mapping-control">
+                                    <label htmlFor="template-key-column">Template key column</label>
+                                    <select id="template-key-column" className="column-select" value={templateKeyField} onChange={(e) => setTemplateKeyField(e.target.value)}>
+                                        {templateColumns.map((col) => <option key={col} value={col}>{col}</option>)}
+                                    </select>
+                                </div>
+                            </div>
                         </div>
 
-                        <h4>Column mapping</h4>
+                        <h4 className="mapping-title">Column mapping</h4>
                         {fieldMappings.map((mapping, index) => (
                             <div className="field-mapping" key={`mapping-${index}`}>
-                                <select value={mapping.source} onChange={(e) => updateMapping(index, 'source', e.target.value)}>
-                                    <option value="">Select source field...</option>
-                                    {sourceColumns.map((col) => <option key={col} value={col}>{col}</option>)}
-                                </select>
-                                <span>-&gt;</span>
-                                <select value={mapping.target} onChange={(e) => updateMapping(index, 'target', e.target.value)}>
-                                    <option value="">Select template field...</option>
-                                    {templateColumns.map((col) => <option key={col} value={col}>{col}</option>)}
-                                </select>
+                                <div className="field-select-wrap">
+                                    <label>From source</label>
+                                    <select value={mapping.source} onChange={(e) => updateMapping(index, 'source', e.target.value)}>
+                                        <option value="">Select source field...</option>
+                                        {sourceColumns.map((col) => <option key={col} value={col}>{col}</option>)}
+                                    </select>
+                                </div>
+                                <span className="mapping-arrow">-&gt;</span>
+                                <div className="field-select-wrap">
+                                    <label>To template</label>
+                                    <select value={mapping.target} onChange={(e) => updateMapping(index, 'target', e.target.value)}>
+                                        <option value="">Select template field...</option>
+                                        {templateColumns.map((col) => <option key={col} value={col}>{col}</option>)}
+                                    </select>
+                                </div>
                                 <button type="button" className="btn btn-danger" onClick={() => removeMapping(index)} disabled={fieldMappings.length === 1}>
                                     Remove
                                 </button>

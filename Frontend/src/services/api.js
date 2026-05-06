@@ -1,8 +1,18 @@
+const BACKEND_CONNECTION_ERROR = 'Cannot connect to backend API. Please make sure backend server is running.';
+
+async function safeFetch(url, options) {
+    try {
+        return await fetch(url, options);
+    } catch (error) {
+        throw new Error(BACKEND_CONNECTION_ERROR);
+    }
+}
+
 export async function getFilePreview(file) {
     const formData = new FormData();
     formData.append('file', file);
 
-    const response = await fetch('/api/preview', { method: 'POST', body: formData });
+    const response = await safeFetch('/api/preview', { method: 'POST', body: formData });
     if (!response.ok) throw new Error('Failed to get file preview');
     return response.json();
 }
@@ -15,7 +25,7 @@ export async function processMapping(payload) {
     formData.append('templateKeyField', payload.templateKeyField);
     formData.append('fieldMappings', JSON.stringify(payload.fieldMappings));
 
-    const response = await fetch('/api/process', { method: 'POST', body: formData });
+    const response = await safeFetch('/api/process', { method: 'POST', body: formData });
     if (!response.ok) {
         let message = 'Processing failed';
         try {
