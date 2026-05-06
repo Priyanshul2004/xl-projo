@@ -1,55 +1,57 @@
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs-extra');
 const fileController = require('../controllers/fileController');
 
 const router = express.Router();
+const uploadsDir = path.resolve(__dirname, '../../uploads');
 
-// Configure multer for file uploads
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads/');
+    destination: async (req, file, cb) => {
+        try {
+            await fs.ensureDir(uploadsDir);
+            cb(null, uploadsDir);
+        } catch (error) {
+            cb(error, uploadsDir);
+        }
     },
     filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
         cb(null, uniqueSuffix + path.extname(file.originalname));
     }
 });
 
-const upload = multer({ 
-    storage: storage,
+const upload = multer({
+    storage,
     fileFilter: (req, file, cb) => {
-        // Check if file is Excel file
         const allowedTypes = [
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
-            'application/vnd.ms-excel', // .xls
-            'application/octet-stream' // Sometimes Excel files are detected as this
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'application/vnd.ms-excel',
+            'application/octet-stream',
+            'text/csv',
+            'application/csv'
         ];
-        
-        const allowedExtensions = ['.xlsx', '.xls'];
+        const allowedExtensions = ['.xlsx', '.xls', '.csv'];
         const fileExtension = path.extname(file.originalname).toLowerCase();
-        
+
         if (allowedTypes.includes(file.mimetype) || allowedExtensions.includes(fileExtension)) {
             cb(null, true);
         } else {
-            cb(new Error('Only Excel files (.xlsx, .xls) are allowed'), false);
+            cb(new Error('Only Excel/CSV files (.xlsx, .xls, .csv) are allowed'), false);
         }
     },
     limits: {
-        fileSize: 10 * 1024 * 1024 // 10MB limit
+        fileSize: 10 * 1024 * 1024
     }
 });
 
-// Route for file upload and processing
 router.post('/process', upload.fields([
     { name: 'sourceFile', maxCount: 1 },
     { name: 'templateFile', maxCount: 1 }
 ]), fileController.processFiles);
 
-// Route for file download
 router.get('/download/:fileName', fileController.downloadFile);
-
-// Route for file preview (for column mapping)
 router.post('/preview', upload.single('file'), fileController.getFilePreview);
 
 module.exports = router;

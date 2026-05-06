@@ -2,10 +2,10 @@
   "name": "excel-mapping-app",
   "version": "1.0.0",
   "description": "Excel file mapping and processing web application",
-  "main": "server.js",
+  "main": "Backend/src/server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js",
+    "start": "node Backend/src/server.js",
+    "dev": "nodemon Backend/src/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
