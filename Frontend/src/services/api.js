@@ -1,8 +1,11 @@
-const BACKEND_CONNECTION_ERROR = 'Cannot connect to backend API. Please make sure backend server is running.';
+const BACKEND_CONNECTION_ERROR =
+  'Cannot connect to backend API. Please make sure backend server is running.';
 
+const API_BASE =
+  'https://xl-projo-backend.onrender.com';
 async function safeFetch(url, options) {
     try {
-        return await fetch(url, options);
+        return await fetch(`${API_BASE}${url}`, options);
     } catch (error) {
         throw new Error(BACKEND_CONNECTION_ERROR);
     }
