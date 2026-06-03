@@ -178,6 +178,123 @@ class FileController {
             });
         }
     }
+
+    async saveMapping(req, res) {
+        try {
+            const { sourceKeyField, templateKeyField, fieldMappings, sourceColumns, templateColumns } = req.body;
+
+            if (!sourceKeyField || !templateKeyField || !fieldMappings || !Array.isArray(fieldMappings)) {
+                return res.status(400).json({
+                    error: 'Missing required mapping fields'
+                });
+            }
+
+            const mappingData = {
+                id: Date.now().toString(),
+                timestamp: new Date().toISOString(),
+                expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+                sourceKeyField,
+                templateKeyField,
+                fieldMappings,
+                sourceColumns,
+                templateColumns
+            };
+
+            // Store in a mappings file (can be extended to database later)
+            const mappingsDir = path.join(uploadsRoot, 'mappings');
+            await fs.ensureDir(mappingsDir);
+            const mappingPath = path.join(mappingsDir, `mapping_${mappingData.id}.json`);
+            await fs.writeJSON(mappingPath, mappingData);
+
+            res.json({
+                success: true,
+                message: 'Mapping saved successfully',
+                mappingId: mappingData.id,
+                expiresAt: mappingData.expiresAt
+            });
+        } catch (error) {
+            console.error('Error saving mapping:', error);
+            res.status(500).json({
+                error: 'Failed to save mapping'
+            });
+        }
+    }
+
+    async getSavedMappings(req, res) {
+        try {
+            const mappingsDir = path.join(uploadsRoot, 'mappings');
+            
+            if (!await fs.pathExists(mappingsDir)) {
+                return res.json({
+                    success: true,
+                    mappings: [],
+                    message: 'No saved mappings found'
+                });
+            }
+
+            const files = await fs.readdir(mappingsDir);
+            const mappings = [];
+
+            for (const file of files) {
+                try {
+                    const filePath = path.join(mappingsDir, file);
+                    const data = await fs.readJSON(filePath);
+
+                    // Check if mapping expired
+                    if (new Date(data.expiresAt) > new Date()) {
+                        mappings.push(data);
+                    } else {
+                        // Delete expired mapping
+                        await fs.remove(filePath).catch(() => {});
+                    }
+                } catch (error) {
+                    console.error(`Error reading mapping file ${file}:`, error);
+                }
+            }
+
+            res.json({
+                success: true,
+                mappings: mappings.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+            });
+        } catch (error) {
+            console.error('Error fetching saved mappings:', error);
+            res.status(500).json({
+                error: 'Failed to fetch saved mappings'
+            });
+        }
+    }
+
+    async deleteMapping(req, res) {
+        try {
+            const { mappingId } = req.params;
+
+            if (!mappingId) {
+                return res.status(400).json({
+                    error: 'Mapping ID is required'
+                });
+            }
+
+            const mappingsDir = path.join(uploadsRoot, 'mappings');
+            const mappingPath = path.join(mappingsDir, `mapping_${mappingId}.json`);
+
+            if (await fs.pathExists(mappingPath)) {
+                await fs.remove(mappingPath);
+                res.json({
+                    success: true,
+                    message: 'Mapping deleted successfully'
+                });
+            } else {
+                res.status(404).json({
+                    error: 'Mapping not found'
+                });
+            }
+        } catch (error) {
+            console.error('Error deleting mapping:', error);
+            res.status(500).json({
+                error: 'Failed to delete mapping'
+            });
+        }
+    }
 }
 
 module.exports = new FileController();

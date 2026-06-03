@@ -51,6 +51,9 @@ router.post('/process', upload.fields([
     { name: 'templateFile', maxCount: 1 }
 ]), fileController.processFiles);
 
+router.post('/mapping/save', fileController.saveMapping);
+router.get('/mapping/list', fileController.getSavedMappings);
+router.delete('/mapping/:mappingId', fileController.deleteMapping);
 router.get('/download/:fileName', fileController.downloadFile);
 router.post('/preview', upload.single('file'), fileController.getFilePreview);
 
