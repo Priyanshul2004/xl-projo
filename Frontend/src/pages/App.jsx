@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from 'react';
-import { getFilePreview, processMapping } from '../services/api.js';
+import { getFilePreview, processMapping, API_BASE } from '../services/api.js';
 import { loadMappingFromStorage, saveMappingToStorage, getSavedMappingsFromStorage, deleteMappingFromStorage, loadUserNameFromStorage, saveUserNameToStorage } from '../utils/mappingStorage.js';
 
 function fileSize(bytes) {
@@ -462,7 +462,14 @@ export function App({ theme, onToggleTheme }) {
                                     <div className="stat-card"><div className="stat-number">{result.stats.updatedCells}</div><div className="stat-label">Values written</div></div>
                                 </div>
                                 <div className="actions-row">
-                                    <a className="btn btn-success" href={result.downloadUrl} target="_blank" rel="noreferrer">Download file</a>
+                                    <a
+                                        className="btn btn-success"
+                                        href={result.downloadUrl?.startsWith('http') ? result.downloadUrl : `${API_BASE}${result.downloadUrl}`}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                    >
+                                        Download file
+                                    </a>
                                     <button className="btn btn-primary" onClick={startOver}>Start over</button>
                                 </div>
                             </div>
