@@ -1,0 +1,42 @@
+[2026-06-17T15:47:43.334Z] processFiles called - body keys: ["keyField","templateKeyField","fieldMappings"]
+[2026-06-17T15:47:43.337Z] processFiles called - files keys: ["sourceFile","templateFile"]
+[2026-06-17T15:47:43.339Z] uploaded file sourceFile: originalname=analysis-2026-06-17_04-56.csv, path=C:\Users\Priyanshul\Desktop\projo\xl-projo\Backend\uploads\1781711263304-494288006.csv, size=348198
+[2026-06-17T15:47:43.340Z] uploaded file templateFile: originalname=testfile1.xlsx, path=C:\Users\Priyanshul\Desktop\projo\xl-projo\Backend\uploads\1781711263324-111121464.xlsx, size=151599
+[2026-06-17T15:47:56.562Z] processFiles called - body keys: ["keyField","templateKeyField","fieldMappings"]
+[2026-06-17T15:47:56.565Z] processFiles called - files keys: ["sourceFile","templateFile"]
+[2026-06-17T15:47:56.576Z] uploaded file sourceFile: originalname=analysis-2026-06-17_04-56.csv, path=C:\Users\Priyanshul\Desktop\projo\xl-projo\Backend\uploads\1781711276549-165305291.csv, size=348198
+[2026-06-17T15:47:56.578Z] uploaded file templateFile: originalname=testfile1.xlsx, path=C:\Users\Priyanshul\Desktop\projo\xl-projo\Backend\uploads\1781711276558-409076019.xlsx, size=151599
+[2026-06-17T15:48:42.590Z] processFiles called - body keys: ["keyField","templateKeyField","fieldMappings"]
+[2026-06-17T15:48:42.591Z] processFiles called - files keys: ["sourceFile","templateFile"]
+[2026-06-17T15:48:42.593Z] uploaded file sourceFile: originalname=analysis-2026-06-17_04-56.csv, path=C:\Users\Priyanshul\Desktop\projo\xl-projo\Backend\uploads\1781711322575-846296740.csv, size=348198
+[2026-06-17T15:48:42.594Z] uploaded file templateFile: originalname=testfile1.xlsx, path=C:\Users\Priyanshul\Desktop\projo\xl-projo\Backend\uploads\1781711322585-829022573.xlsx, size=151599
+[2026-06-17T15:49:21.794Z] processFiles called - body keys: ["keyField","templateKeyField","fieldMappings"]
+[2026-06-17T15:49:21.796Z] processFiles called - files keys: ["sourceFile","templateFile"]
+[2026-06-17T15:49:21.797Z] uploaded file sourceFile: originalname=analysis-2026-06-17_04-56.csv, path=C:\Users\Priyanshul\Desktop\projo\xl-projo\Backend\uploads\1781711361775-611683913.csv, size=348198
+[2026-06-17T15:49:21.799Z] uploaded file templateFile: originalname=testfile1.xlsx, path=C:\Users\Priyanshul\Desktop\projo\xl-projo\Backend\uploads\1781711361788-300183298.xlsx, size=151599
+[2026-06-17T15:49:58.661Z] processFiles called - body keys: ["keyField","templateKeyField","fieldMappings"]
+[2026-06-17T15:49:58.663Z] processFiles called - files keys: ["sourceFile","templateFile"]
+[2026-06-17T15:49:58.664Z] uploaded file sourceFile: originalname=analysis-2026-06-17_04-56.csv, path=C:\Users\Priyanshul\Desktop\projo\xl-projo\Backend\uploads\1781711398624-258901664.csv, size=348198
+[2026-06-17T15:49:58.665Z] uploaded file templateFile: originalname=testfile1.xlsx, path=C:\Users\Priyanshul\Desktop\projo\xl-projo\Backend\uploads\1781711398643-529578750.xlsx, size=151599
+[2026-06-17T15:51:27.968Z] processFiles called - body keys: ["keyField","templateKeyField","fieldMappings"]
+[2026-06-17T15:51:27.972Z] processFiles called - files keys: ["sourceFile","templateFile"]
+[2026-06-17T15:51:27.973Z] uploaded file sourceFile: originalname=analysis-2026-06-17_04-56.csv, path=C:\Users\Priyanshul\Desktop\projo\xl-projo\Backend\uploads\1781711487933-251357194.csv, size=348198
+[2026-06-17T15:51:27.974Z] uploaded file templateFile: originalname=testfile1.xlsx, path=C:\Users\Priyanshul\Desktop\projo\xl-projo\Backend\uploads\1781711487952-535687652.xlsx, size=151599
+[2026-06-17T15:51:27.976Z] === processFiles START ===
+[2026-06-17T15:52:31.815Z] processFiles called - body keys: ["keyField","templateKeyField","fieldMappings"]
+[2026-06-17T15:52:31.819Z] processFiles called - files keys: ["sourceFile","templateFile"]
+[2026-06-17T15:52:31.820Z] uploaded file sourceFile: originalname=analysis-2026-06-17_04-56.csv, path=C:\Users\Priyanshul\Desktop\projo\xl-projo\Backend\uploads\1781711551785-262389806.csv, size=348198
+[2026-06-17T15:52:31.821Z] uploaded file templateFile: originalname=testfile1.xlsx, path=C:\Users\Priyanshul\Desktop\projo\xl-projo\Backend\uploads\1781711551806-685069824.xlsx, size=151599
+[2026-06-17T15:52:31.823Z] === processFiles START ===
+[2026-06-17T15:53:29.203Z] processFiles called - body keys: ["keyField","templateKeyField","fieldMappings"]
+[2026-06-17T15:53:29.207Z] processFiles called - files keys: ["sourceFile","templateFile"]
+[2026-06-17T15:53:29.209Z] uploaded file sourceFile: originalname=analysis-2026-06-17_04-56.csv, path=C:\Users\Priyanshul\Desktop\projo\xl-projo\Backend\uploads\1781711609174-902640108.csv, size=348198
+[2026-06-17T15:53:29.211Z] uploaded file templateFile: originalname=testfile1.xlsx, path=C:\Users\Priyanshul\Desktop\projo\xl-projo\Backend\uploads\1781711609194-817916758.xlsx, size=151599
+[2026-06-17T15:53:29.212Z] === processFiles START ===
+[2026-06-17T15:53:34.974Z] processFiles SUCCESS: downloadUrl=/api/download/updated_2026-06-17T15-53-34-739Z_testfile1.xlsx, stats={"totalSheets":2,"totalRowsScanned":196,"matchedRecords":180,"updatedCells":1080}
+[2026-06-17T15:54:39.961Z] processFiles called - body keys: ["keyField","templateKeyField","fieldMappings"]
+[2026-06-17T15:54:39.963Z] processFiles called - files keys: ["sourceFile","templateFile"]
+[2026-06-17T15:54:39.964Z] uploaded file sourceFile: originalname=analysis-2026-06-17_04-56.csv, path=C:\Users\Priyanshul\Desktop\projo\xl-projo\Backend\uploads\1781711679936-491746318.csv, size=348198
+[2026-06-17T15:54:39.965Z] uploaded file templateFile: originalname=testfile1.xlsx, path=C:\Users\Priyanshul\Desktop\projo\xl-projo\Backend\uploads\1781711679946-318999060.xlsx, size=151599
+[2026-06-17T15:54:39.967Z] === processFiles START ===
+[2026-06-17T15:54:45.684Z] processFiles SUCCESS: downloadUrl=/api/download/updated_2026-06-17T15-54-45-508Z_testfile1.xlsx, stats={"totalSheets":2,"totalRowsScanned":196,"matchedRecords":180,"updatedCells":1080}

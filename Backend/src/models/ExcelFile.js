@@ -1,5 +1,6 @@
 const ExcelJS = require('exceljs');
 const path = require('path');
+const fs = require('fs-extra');
 
 class ExcelFile {
     constructor(filePath) {
@@ -150,11 +151,47 @@ class ExcelFile {
 
     async saveUpdatedFile(outputPath) {
         try {
+            await fs.ensureDir(path.dirname(outputPath));
+
+            // Replace formula cells with their last calculated results to avoid
+            // exceljs issues with shared formulas when writing files.
+            try {
+                this.workbook.eachSheet((worksheet) => {
+                    worksheet.eachRow({ includeEmpty: true }, (row) => {
+                        row.eachCell({ includeEmpty: true }, (cell) => {
+                            try {
+                                const val = cell.value;
+                                if (val && typeof val === 'object') {
+                                    const hasFormulaLike = ('formula' in val) || ('sharedFormula' in val) || ('master' in val) || (val.result !== undefined);
+                                    if (hasFormulaLike) {
+                                        const result = val.result !== undefined ? val.result : null;
+                                        cell.value = result;
+                                    }
+                                }
+                            } catch (e) {
+                                // ignore per-cell errors
+                            }
+                        });
+                    });
+                });
+            } catch (e) {
+                console.warn('Failed to strip formulas before save:', e);
+            }
+
             await this.workbook.xlsx.writeFile(outputPath);
             return true;
         } catch (error) {
-            console.error('Error saving updated file:', error);
-            return false;
+            console.error('Error saving updated file via writeFile:', error);
+            // Fallback: try writing buffer then saving via fs
+            try {
+                const buffer = await this.workbook.xlsx.writeBuffer();
+                await fs.writeFile(outputPath, Buffer.from(buffer));
+                console.log('Saved updated file via fallback buffer write:', outputPath);
+                return true;
+            } catch (err2) {
+                console.error('Fallback buffer write failed:', err2);
+                return false;
+            }
         }
     }
 }

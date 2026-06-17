@@ -2,7 +2,7 @@ export const BACKEND_CONNECTION_ERROR =
   'Cannot connect to backend API. Please make sure backend server is running.';
 
 export const API_BASE =
-  'https://xl-projo-backend.onrender.com';
+    import.meta.env.VITE_API_BASE || '';
 async function safeFetch(url, options) {
     try {
         return await fetch(`${API_BASE}${url}`, options);

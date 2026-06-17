@@ -4,18 +4,65 @@ const ExcelFile = require('../models/ExcelFile');
 
 const uploadsRoot = path.resolve(__dirname, '../../uploads');
 const processedDir = path.join(uploadsRoot, 'processed');
+const mappingsDir = path.join(uploadsRoot, 'mappings');
+const logsDir = path.join(uploadsRoot, 'logs');
+const backendLogPath = path.join(logsDir, 'backend.log');
+
+// Ensure upload directories exist on startup for local development
+try {
+    fs.ensureDirSync(uploadsRoot);
+    fs.ensureDirSync(processedDir);
+    fs.ensureDirSync(mappingsDir);
+    fs.ensureDirSync(logsDir);
+} catch (err) {
+    console.error('Error ensuring upload directories exist:', err);
+}
+
+function appendLog(entry) {
+    try {
+        const ts = new Date().toISOString();
+        fs.appendFileSync(backendLogPath, `[${ts}] ${entry}\n`);
+    } catch (e) {
+        console.error('Failed to write to backend log:', e);
+    }
+}
 
 class FileController {
     async processFiles(req, res) {
         try {
             const files = req.files;
+            // Verbose logging to help diagnose 500 errors in deployed environment
+            try {
+                const bodyKeys = JSON.stringify(Object.keys(req.body || {}));
+                const filesKeys = JSON.stringify(Object.keys(files || {}));
+                console.log('processFiles called - body keys:', bodyKeys);
+                console.log('processFiles called - files keys:', filesKeys);
+                appendLog(`processFiles called - body keys: ${bodyKeys}`);
+                appendLog(`processFiles called - files keys: ${filesKeys}`);
+                if (files) {
+                    for (const k of Object.keys(files)) {
+                        const f = files[k] && files[k][0];
+                        if (f) {
+                            const info = `uploaded file ${k}: originalname=${f.originalname}, path=${f.path}, size=${f.size}`;
+                            console.log(info);
+                            appendLog(info);
+                        }
+                    }
+                }
+                console.log('=== processFiles START ===');
+                appendLog('=== processFiles START ===');
+            } catch (logErr) {
+                console.error('Error logging request payload:', logErr);
+                appendLog(`Error logging request payload: ${logErr && logErr.stack ? logErr.stack : logErr}`);
+            }
             const sourceFile = files && files.sourceFile && files.sourceFile[0];
             const templateFile = files && files.templateFile && files.templateFile[0];
 
             if (!sourceFile || !templateFile) {
-                return res.status(400).json({
-                    error: 'Please upload both source and template files'
-                });
+                const msg = 'Please upload both source and template files';
+                console.warn('processFiles validation failed:', msg, { filesPresent: !!files });
+                appendLog(`processFiles validation failed: ${msg}`);
+                return res.status(400).json({ error: msg });
             }
 
             const sourceExtension = path.extname(sourceFile.originalname).toLowerCase();
@@ -75,10 +122,13 @@ class FileController {
             const outputFileName = `updated_${timestamp}_${templateBaseName}.xlsx`;
             const outputPath = path.join(processedDir, outputFileName);
 
+            console.log('Preparing to save processed file to:', outputPath);
             await fs.ensureDir(path.dirname(outputPath));
             const saved = await templateExcel.saveUpdatedFile(outputPath);
+            console.log('Result of saveUpdatedFile:', saved);
 
             if (!saved) {
+                console.error('Failed to save updated file to', outputPath);
                 return res.status(500).json({
                     error: 'Failed to save updated file'
                 });
@@ -87,7 +137,7 @@ class FileController {
             await fs.remove(sourceFile.path);
             await fs.remove(templateFile.path);
 
-            res.json({
+            const responsePayload = {
                 success: true,
                 message: 'Files processed successfully',
                 downloadUrl: `/api/download/${outputFileName}`,
@@ -97,12 +147,19 @@ class FileController {
                     matchedRecords: stats.matchedRows,
                     updatedCells: stats.updatedCells
                 }
-            });
+            };
+            console.log('=== processFiles SUCCESS ===', responsePayload);
+            appendLog(`processFiles SUCCESS: downloadUrl=${responsePayload.downloadUrl}, stats=${JSON.stringify(responsePayload.stats)}`);
+            res.json(responsePayload);
         } catch (error) {
             console.error('Error processing files:', error);
-            res.status(500).json({
-                error: 'Internal server error during file processing'
-            });
+            if (error && error.stack) console.error(error.stack);
+            const resp = { error: 'Internal server error during file processing' };
+            if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
+                resp.message = error.message;
+                resp.stack = error.stack;
+            }
+            res.status(500).json(resp);
         }
     }
 
